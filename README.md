@@ -1,2 +1,3 @@
-# aether
+# Lilac
+
 A Java Graphics Engine
