@@ -3,12 +3,8 @@ package me.baileykocin.lilac.config;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
 
 import org.ini4j.Ini;
 
