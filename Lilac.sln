@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Native", "Native\Native.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{683B0EE5-3997-41D1-9F96-9E65A33F4E98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLAD", "GLAD\GLAD.csproj", "{18C349B8-D2E3-4578-8C95-2341503E9DAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLAZE", "GLAZE\GLAZE.csproj", "{18C349B8-D2E3-4578-8C95-2341503E9DAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
