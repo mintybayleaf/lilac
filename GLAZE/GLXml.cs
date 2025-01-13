@@ -6,15 +6,15 @@ using System.Xml.Linq;
 
 namespace GLGen;
 
-public class GLXML
+public class GLXml
 {
     private const string UnknownValue = "???";
     private XmlElement? RootElement { get; set; }
     private XmlDocument Document { get; } = new();
     
-    internal static GLXML From(string filename)
+    internal static GLXml From(string filename)
     {
-        var that = new GLXML();
+        var that = new GLXml();
         that.Document.Load(filename);
         that.RootElement = that.Document.DocumentElement;
         return that;
@@ -278,6 +278,39 @@ public class GLXML
             return _glfeatures;
         }
     }
+    
+    public record struct GLExtension()
+    {
+        public HashSet<string> Enums { get; set; } = [];
+        public HashSet<string> Commands { get; set; } = [];
+    }
+    
+    private Dictionary<string, HashSet<GLExtension>>? _glextensions { get; set; } = null;
 
+    public Dictionary<string, HashSet<GLExtension>> GLExtensions
+    {
+        get
+        {   
+            if (_glextensions is not null) return _glextensions;
+            _glextensions = new Dictionary<string, HashSet<GLExtension>>();
 
+            foreach (var extension in SafeGetElements("extensions/extension[@supported='gl']"))
+            {
+                var name = SafeGetAttribute(extension, "name");
+                var versionFeatures = new HashSet<GLExtension>();
+
+                foreach (var required in SafeGetElements(extension, "require"))
+                {
+                    var glExtension = new GLExtension();
+                    glExtension.Enums.UnionWith(SafeGetElements(required, "enum").Select(element => SafeGetAttribute(element, "name")));
+                    glExtension.Commands.UnionWith(SafeGetElements(required, "command").Select(element => SafeGetAttribute(element, "name")));
+                    versionFeatures.Add(glExtension);
+                }
+                
+                _glextensions.Add(name, versionFeatures);
+               
+            }
+            return _glextensions;
+        }
+    }
 }
