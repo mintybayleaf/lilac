@@ -82,11 +82,57 @@ public class GLXml
      * I have no idea what the other tags really do, but I do not need them either 
      */
 
+    public record struct GLKind
+    {
+        public string Name { get; init; }
+        public string Description { get; init; }
+    }
+    
+    private Dictionary<string, GLKind>? _glkinds { get; set; } = null;
+
+    public  Dictionary<string, GLKind> GLKinds
+    {
+        get
+        {
+            if (_glkinds != null) return _glkinds;
+            _glkinds = new Dictionary<string, GLKind>();
+            return _glkinds;
+        }
+    }
+    
+    public record struct GLType
+    {
+        public string Type { get; init; }
+        public string Name { get; init; }
+    }
+    
+    private Dictionary<string, GLType>? _gltypes { get; set; } = null;
+
+    public  Dictionary<string, GLType> GLTypes
+    {
+        get
+        {
+            if (_gltypes != null) return _gltypes;
+            _gltypes = new Dictionary<string, GLType>();
+            return _gltypes;
+        }
+    }
+
+    public record struct GLEnumGroup
+    {
+        public string Group { get; init; }
+        public string Type { get; init; }
+        
+        public string Namespace { get; init; }
+        public string Start { get; init; }
+        public string End { get; init; }
+        public string Vendor { get; init; }
+    }
+
     public record struct GLEnum
     {
         public string Name { get; init; }
         public string Groups { get; init; }
-        public string MainGroup { get; init; }
         public string Value { get; init; }
         
         public string Comment { get; init; }
@@ -116,31 +162,45 @@ public class GLXml
         }
     }
     
-    private Dictionary<string, GLEnum>? _glenums { get; set; } = null;
+    private Dictionary<GLEnumGroup, HashSet<GLEnum>>? _glenums { get; set; } = null;
 
-    public Dictionary<string, GLEnum> GLEnums
+    public Dictionary<GLEnumGroup, HashSet<GLEnum>> GLEnums
     {
         get
         {
             if (_glenums is not null) return _glenums;
-            _glenums = new Dictionary<string, GLEnum>();
+            _glenums = new Dictionary<GLEnumGroup, HashSet<GLEnum>>();
             
             foreach (var enumerations in SafeGetElements("enums"))
             {
                 var group = SafeGetAttribute(enumerations, "group");
-
+                var type = SafeGetAttribute(enumerations, "type");
+                var ns = SafeGetAttribute(enumerations, "namespace");
+                var start = SafeGetAttribute(enumerations, "start");
+                var end = SafeGetAttribute(enumerations, "end");
+                var vendor = SafeGetAttribute(enumerations, "vendor");
+                
+                var glEnumGroup = new GLEnumGroup() { 
+                        Group = group, 
+                        Type = type, 
+                        Namespace = ns, 
+                        Start = start, 
+                        End = end, 
+                        Vendor = vendor 
+                };
+                _glenums.Add(glEnumGroup, []);
+                
                 foreach (var element in SafeGetElements(enumerations, "enum"))
                 {
                     var name = SafeGetAttribute(element, "name");
                         
-                    _glenums[name] = new GLEnum()
+                    _glenums[glEnumGroup].Add(new GLEnum()
                     {
                         Name = name,
                         Value = SafeGetAttribute(element, "value"),
                         Groups = SafeGetAttribute(element, "group"),
-                        MainGroup = group,
                         Comment = SafeGetAttribute(element, "comment")
-                    };
+                    });
                 }
 
             }
